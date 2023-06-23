@@ -2,10 +2,9 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
 import {  Button, Image, View, Platform, StyleSheet, TouchableOpacity, Alert, Text } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import {Amplify, Storage} from 'aws-amplify';
-import awsmobile from './src/aws-exports';
-Amplify.configure(awsmobile);
-
+import Amplify,{Storage} from 'aws-amplify';
+import awsExports from './src/aws-exports';
+Amplify.configure(awsExports);
 export default function App() {
   const [image, setImage] = useState(null);
   const [type,setType] = useState(null);
@@ -28,46 +27,37 @@ const [isLoading, setisLoading] = useState(false);
   }, []);
   const fetchResourceFromURI = async uri => {
     const response = await fetch(uri);
-    //console.log(response);
+    console.log(response);
     const blob = await response.blob();
+    console.log("HelloHelloHelloHelloHelloHelloHelloHello");
     return blob;
   };
 
-  const uploadResource = async () => {
-    if (isLoading) return;
-    setisLoading(true);
-    const img = await fetchResourceFromURI(asset.uri);
-    return Storage.put(asset.uri, img, {
-      level: 'public',
-      contentType: asset.type,
-      progressCallback(uploadProgress) {
-        setProgressText(
-          `Progress: ${Math.round(
-            (uploadProgress.loaded / uploadProgress.total) * 100,
-          )} %`,
-        );
-        console.log(
-          `Progress: ${uploadProgress.loaded}/${uploadProgress.total}`,
-        );
-      },
+  // The upload function 
+  const uploadFile = async (file) => {
+    const img = await fetchImageUri(file.uri);
+    return Storage.put(`my-image-filename${Math.random()}.jpg`,img, {
+      level:'public',
+      contentType:file.type,
+      progressCallback(uploadProgress){
+        console.log('PROGRESS--', uploadProgress.loaded + '/' + uploadProgress.total);
+      }
     })
-      .then(res => {
-        setProgressText('Upload Done: 100%');
-        setAsset(null);
-        setisLoading(false);
-        Storage.get(res.key)
-          .then(result => console.log(result))
-          .catch(err => {
-            setProgressText('Upload Error');
-            console.log(err);
-          });
+    .then((res) => {
+      Storage.get(res.key)
+      .then((result) => {
+        console.log('RESULT --- ', result);
+        let awsImageUri = result.substring(0,result.indexOf('?'))
+        console.log('RESULT AFTER REMOVED URI --', awsImageUri)
+        setIsLoading(false)
       })
-      .catch(err => {
-        setisLoading(false);
-        setProgressText('Upload Error');
-        console.log(err);
-      });
-  };
+      .catch(e => {
+        console.log(e);
+      })
+    }).catch(e => {
+      console.log(e);
+    })
+  }
   // selection of the image
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -95,8 +85,8 @@ const [isLoading, setisLoading] = useState(false);
       <TouchableOpacity onPress={pickImage}>
         <Text style={styles.button}>SELECT {asset ? 'ANOTHER' : ''} FILE</Text>
       </TouchableOpacity>
-      {asset?.uri && <Image source={{ uri: asset?.uri }} style={{ width: 200, height: 200 }} />}
-      {asset && <Text >Here is the image type : {asset?.type} and blob {testv} </Text>} 
+      {asset?.uri && <Image source={{ uri: asset.uri }} style={{ width: 200, height: 200 }} />}
+      {asset && <Text >Here is the image type : {asset.type} and blob {testv} </Text>} 
 
       {asset ? (
         asset.type.split('/')[0] === 'image' ? (
@@ -113,7 +103,7 @@ const [isLoading, setisLoading] = useState(false);
         ) : null}
       {asset && (
         <>
-          <TouchableOpacity onPress={uploadResource}>
+          <TouchableOpacity onPress={uploadFile(asset)}>
             <Text style={styles.button}>UPLOAD</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setAsset(null)}>
