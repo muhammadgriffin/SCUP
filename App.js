@@ -4,8 +4,9 @@ import {  Button, Image, View, Platform, StyleSheet, TouchableOpacity, Alert, Te
 import * as ImagePicker from 'expo-image-picker';
 import {Amplify, Storage} from 'aws-amplify';
 import awsmobile from './src/aws-exports';
-Amplify.configure(awsmobile);
 
+
+Amplify.configure(awsmobile);
 export default function App() {
   const [image, setImage] = useState(null);
   const [type,setType] = useState(null);
