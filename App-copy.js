@@ -16,17 +16,21 @@ export default function App() {
   const [progressText, setProgressText] = useState('');
   //help disable our buttons from performing any action while the image is getting uploaded
 const [isLoading, setisLoading] = useState(false);
-  useEffect(() => {
-    (async () => {
-      if (Platform.OS !== 'web') {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-          alert('Sorry, we need camera roll permissions to make this work!');
-        }
+const [images, setImages] = useState([]); // Store images from S3 bucket
+const [imageIndex, setImageIndex] = useState(0); // For tracking the current image index
+  
+useEffect(() => {
+  (async () => {
+    if (Platform.OS !== 'web') {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
       }
-    })();
-   
-  }, []);
+    }
+  })();
+  fetchImagesFromS3(); // Fetch images when the app loads or whenever you want to update the slider
+}, []);
+
   const fetchResourceFromURI = async uri => {
     const response = await fetch(uri);
     //console.log(response);
@@ -91,37 +95,72 @@ const [isLoading, setisLoading] = useState(false);
 
 
   };
+
+    // New function to fetch images from S3 bucket
+    const fetchImagesFromS3 = async () => {
+      try {
+        const imageKeys = await Storage.list('');
+        const imageUrls = await Promise.all(
+          imageKeys.map(async (key) => {
+            const url = await Storage.get(key.key);
+            return url;
+          })
+        );
+        setImages(imageUrls);
+      } catch (error) {
+        console.log('Error fetching images from S3:', error);
+      }
+    };
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={pickImage}>
-        <Text style={styles.button}>SELECT {asset ? 'ANOTHER' : ''} FILE</Text>
-      </TouchableOpacity>
+      {/* Image Slider */}
+      {images.length > 0 && (
+        <ImageSlider
+          images={images}
+          currentImageEmitter={(index) => setImageIndex(index)} // Track the current image index
+          customSlide={({ index, item, style, width }) => (
+            // Customize the slider's individual image display here if needed
+            <View key={index} style={{ flex: 1 }}>
+              <Image source={{ uri: item }} style={{ width: width, flex: 1 }} />
+            </View>
+          )}
+          sliderBoxHeight={200}
+          currentImage={imageIndex} // Set the current image index
+        />
+      )}
+
+      {/* Selected Image */}
       {asset?.uri && <Image source={{ uri: asset?.uri }} style={{ width: 200, height: 200 }} />}
-      {asset && <Text >Here is the image type : {asset?.type} and blob {testv} </Text>} 
+      {asset && <Text>Here is the image type : {asset?.type} and blob {testv} </Text>}
 
       {asset ? (
         asset.type.split('/')[0] === 'image' ? (
           <Image
             style={styles.selectedImage}
-            source={{uri: asset?.uri ?? ''}}
+            source={{ uri: asset?.uri ?? '' }}
           />
         ) : (
           <Video
             style={styles.selectedImage}
-            source={{uri: asset?.uri ?? ''}}
+            source={{ uri: asset?.uri ?? '' }}
           />
         )
-        ) : null}
+      ) : null}
+
+      {/* Buttons */}
       {asset && (
         <>
-          <TouchableOpacity onPress={uploadResource}>
+          <TouchableOpacity onPress={uploadResource} disabled={isLoading}>
             <Text style={styles.button}>UPLOAD</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setAsset(null)}>
+          <TouchableOpacity onPress={() => setAsset(null)} disabled={isLoading}>
             <Text style={styles.cancelButton}>Remove Selected Image</Text>
           </TouchableOpacity>
         </>
       )}
+
+      {/* Progress */}
+      {isLoading && <Text>{progressText}</Text>}
     </View>
   );
 }
