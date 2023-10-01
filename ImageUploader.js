@@ -4,14 +4,19 @@ import {  Button, Image, View, Platform, StyleSheet, TouchableOpacity, Alert, Te
 import * as ImagePicker from 'expo-image-picker';
 import {Amplify, Storage} from 'aws-amplify';
 import awsmobile from './src/aws-exports';
-
+import ImageSlider from './ImageSlider';
 
 Amplify.configure(awsmobile);
-export default function App() {
+export default function ImageUploader() {
   const [image, setImage] = useState(null);
   const [type,setType] = useState(null);
   const [asset,setAsset] = useState(null);
   const[testv,setTestv] = useState(null);
+  const [objectUris, setObjectUris] = useState([]);
+  const [imageUrls, setImageUrls] = useState([]);
+  const [imageUri, setImageUri] = useState(null);
+  const [labels, setLabels] = useState([]);
+
   // display the progress of the upload
   const [progressText, setProgressText] = useState('');
   //help disable our buttons from performing any action while the image is getting uploaded
@@ -25,20 +30,50 @@ const [isLoading, setisLoading] = useState(false);
         }
       }
     })();
+
+
    
   }, []);
+// The following returns a blob from an uri  
   const fetchResourceFromURI = async uri => {
-    const response = await fetch(uri);
-    //console.log(response);
-    const blob = await response.blob();
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = () => {
+        resolve(xhr.response);
+      };
+      xhr.onerror = e => {
+        reject(new TypeError('Network request failed'));
+      };
+      xhr.responseType = 'blob';
+      xhr.open('GET', uri, true);
+      xhr.send(null);
+    });
     return blob;
   };
-
+// Lists the images from s3 storage  
+  const fetchImageUrls = async () => {
+    try {
+      const { results } = await Storage.list('images/',{pageSize: 1000, level: 'public'});
+      //console.log(results) // Replace 'photos/' with your desired prefix
+      const urls = results.map(item => Storage.get(item.key));
+      
+      Promise.all(urls)
+        .then(urls =>{ setImageUrls(urls); /*console.log("here are the urls",urls) */})
+        .catch(err => console.log('Error fetching image URLs:', err));
+    } catch (err) {
+      console.log('Error listing images:', err);
+    }
+  };
+// uploads a selected image to S3  
   const uploadResource = async () => {
     if (isLoading) return;
     setisLoading(true);
     const img = await fetchResourceFromURI(asset.uri);
-    return Storage.put(asset.uri, img, {
+    // Get the file extension from the image URI
+    const extension = asset.uri.split('.').pop();
+    // Set the key without any extension
+    const key = `images/my-image-${Date.now()}.${extension}`;
+    return Storage.put(key, img, {
       level: 'public',
       contentType: asset.type,
       progressCallback(uploadProgress) {
@@ -57,7 +92,7 @@ const [isLoading, setisLoading] = useState(false);
         setAsset(null);
         setisLoading(false);
         Storage.get(res.key)
-          .then(result => console.log(result))
+          .then(result => {})
           .catch(err => {
             setProgressText('Upload Error');
             console.log(err);
@@ -91,10 +126,33 @@ const [isLoading, setisLoading] = useState(false);
 
 
   };
+// Object detection logic
+const detectObjects = async () => {
+  try {
+    setImageUri(asset.uri);
+    const response = await Predictions.identify({
+      entities: {
+        source: {
+          file: imageUri,
+        },
+        celebrityDetection: true,
+      },
+    });
+    const detectedLabels = response.entities;
+    setLabels(detectedLabels);
+  } catch (error) {
+    console.log('Error detecting objects:', error);
+    Alert.alert('Error', 'Failed to detect objects in the image.');
+  }
+};
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={pickImage}>
         <Text style={styles.button}>SELECT {asset ? 'ANOTHER' : ''} FILE</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={fetchImageUrls}>
+        <Text style={styles.button}>Display Images</Text>
       </TouchableOpacity>
       {asset?.uri && <Image source={{ uri: asset?.uri }} style={{ width: 200, height: 200 }} />}
       {asset && <Text >Here is the image type : {asset?.type} and blob {testv} </Text>} 
@@ -122,6 +180,12 @@ const [isLoading, setisLoading] = useState(false);
           </TouchableOpacity>
         </>
       )}
+      {imageUrls && <ImageSlider imageUrls={imageUrls} />}
+      <TouchableOpacity onPress={detectObjects} disabled={!asset.uri}>
+        <Text style={styles.button} disabled={!asset.uri}>
+          DETECT OBJECTS
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -151,5 +215,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  image: {
+    width: 200,
+    height: 200,
+    marginVertical: 10,
+  },  labelsContainer: {
+    marginTop: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginVertical: 5,
   },
 });

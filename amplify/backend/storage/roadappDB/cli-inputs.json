@@ -1,0 +1,14 @@
+{
+  "resourceName": "roadappDB",
+  "tableName": "images_data",
+  "partitionKey": {
+    "fieldName": "id",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "s3Key",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}

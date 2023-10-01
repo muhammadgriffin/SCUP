@@ -1,6 +1,24 @@
 {
+  "api": {
+    "awesomeproject": {
+      "dependsOn": [],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [],
+          "defaultAuthentication": {
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7
+            },
+            "authenticationType": "API_KEY"
+          }
+        }
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync"
+    }
+  },
   "auth": {
-    "testamplifybeb38e0a": {
+    "awesomeproject42945d28": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -27,8 +45,21 @@
       "service": "Cognito"
     }
   },
+  "function": {},
+  "predictions": {
+    "identifyLabelse14172c6": {
+      "dependsOn": [],
+      "identifyType": "identifyLabels",
+      "providerPlugin": "awscloudformation",
+      "service": "Rekognition"
+    }
+  },
   "storage": {
-    "s3b62a90e4": {
+    "roadappDB": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "s3e3cb0815": {
       "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "S3"
