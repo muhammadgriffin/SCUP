@@ -1,10 +1,13 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-
+import { useNavigation } from '@react-navigation/native';  // Importing this for drawer toggle
 import SignOutButton from './components/SignOutHandle';
 
-export default function HomeScreen ({navigation}){
-  
+export default function HomeScreen({ navigation }) {
+
+  // We'll use this for the drawer toggle
+  const nav = useNavigation();
+
   const navigateToImageUploader = () => {
     navigation.navigate('UploadDisplay');
   };
@@ -12,9 +15,13 @@ export default function HomeScreen ({navigation}){
   const navigateToMapScreen = () => {
     navigation.navigate('MapScreen');
   };
- 
+
   return (
     <View style={styles.container}>
+      
+      {/* Adding the drawer toggle button here */}
+
+
       <Text style={styles.welcomeText}>Welcome to OurApp!</Text>
       <TouchableOpacity style={styles.customButton} onPress={navigateToImageUploader}>
         <Text style={styles.buttonText}>Go To Upload</Text>
@@ -33,27 +40,34 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#f4f4f8', // A light background color
+    backgroundColor: '#f4f4f8',
   },
   welcomeText: {
     fontSize: 24,
     fontWeight: '600',
     marginBottom: 40,
-    color: '#264653', // Dark cyan
+    color: '#264653',
   },
   customButton: {
-    backgroundColor: '#2a9d8f', // Greenish teal
+    backgroundColor: '#2a9d8f',
     paddingVertical: 15,
     paddingHorizontal: 25,
     borderRadius: 10,
-    marginVertical: 10, // Space between the buttons
-    width: '100%', // Make the button expand to full available width
-    alignItems: 'center', // Center the text inside the button
+    marginVertical: 10,
+    width: '100%',
+    alignItems: 'center',
   },
   buttonText: {
-    color: '#fff', // White color for the button text
+    color: '#fff',
     fontSize: 18,
     fontWeight: '600',
   },
+  drawerToggle: {
+    position: 'absolute',  // Position it to the top left corner
+    top: 40,
+    left: 20,
+  },
+  drawerToggleText: {
+    fontSize: 24,
+  },
 });
-

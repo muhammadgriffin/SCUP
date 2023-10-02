@@ -9,9 +9,9 @@ export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Profile</Text>
-      <Text>Name: John Doe</Text> {/* Replace with actual data */}
-      <Text>Email: john.doe@example.com</Text> {/* Replace with actual data */}
-      {/* Add more fields as required */}
+      <Text>Name: John Doe</Text>
+      <Text>Email: john.doe@example.com</Text> 
+
     </View>
   );
 }
