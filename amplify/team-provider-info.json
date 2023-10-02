@@ -24,6 +24,12 @@
       },
       "api": {
         "awesomeproject": {}
+      },
+      "function": {
+        "CreateUserForSure": {
+          "deploymentBucketName": "amplify-awesomeproject-dev-155925-deployment",
+          "s3Key": "amplify-builds/CreateUserForSure-386b34533173736f4f2b-build.zip"
+        }
       }
     }
   }

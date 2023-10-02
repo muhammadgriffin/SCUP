@@ -3,7 +3,9 @@ import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'reac
 import { Auth } from 'aws-amplify';
 import { CommonStyles } from '../styles/CommonStyles';
 
+
 function SignUp({ navigation }) {
+  console.log("sign up",navigation);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');

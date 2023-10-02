@@ -10,3 +10,9 @@ type ImageMetadata @model {
   longitude: Float
   imageType: String
 }
+
+type User @model {
+    id: ID!
+    username: String!
+    totalPoints: Int
+}

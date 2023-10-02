@@ -12,7 +12,7 @@ export default function HomeScreen ({navigation}){
   const navigateToMapScreen = () => {
     navigation.navigate('MapScreen');
   };
-
+ 
   return (
     <View style={styles.container}>
       <Text style={styles.welcomeText}>Welcome to OurApp!</Text>

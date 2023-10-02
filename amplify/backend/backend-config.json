@@ -45,7 +45,31 @@
       "service": "Cognito"
     }
   },
-  "function": {},
+  "function": {
+    "CreateUserForSure": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_CreateUserForSure_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "CreateUserForSure"
+        }
+      ]
+    },
+    "AMPLIFY_function_CreateUserForSure_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "CreateUserForSure"
+        }
+      ]
+    }
+  },
   "predictions": {
     "identifyLabelse14172c6": {
       "dependsOn": [],

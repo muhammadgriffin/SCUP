@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import VerificationScreen from './components/VerificationScreen';
+import VerificationScreen from './components/VerificationScreen'
 import HomeScreen from './HomeScreen';
 import UploadDisplay from './Upload_Display';
 import MapScreen from './MapScreen';

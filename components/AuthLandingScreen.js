@@ -3,8 +3,10 @@ import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native
 import SignIn from './SignIn';
 import SignUp from './SignUp';
 import { CommonStyles } from '../styles/CommonStyles';
+import { useNavigation } from '@react-navigation/native';
 
 const AuthLandingScreen = () => {
+  const navigation = useNavigation(); // Use the useNavigation hook to get the navigation object
   const [mode, setMode] = useState('signIn');
   const fadeAnim = new Animated.Value(1);
 
@@ -29,7 +31,7 @@ const AuthLandingScreen = () => {
       <Animated.View style={[styles.authContainer, { opacity: fadeAnim }]}>
         {mode === 'signIn' && (
           <>
-            <SignIn />
+            <SignIn navigation={navigation}/>
             <TouchableOpacity onPress={() => switchMode('signUp')}>
               <Text style={styles.switchText}>
                 Don't have an account? <Text style={styles.underlineText}>Sign Up</Text>
@@ -39,7 +41,7 @@ const AuthLandingScreen = () => {
         )}
         {mode === 'signUp' && (
           <>
-            <SignUp />
+            <SignUp navigation={navigation}/>
             <TouchableOpacity onPress={() => switchMode('signIn')}>
               <Text style={styles.switchText}>
                 Already have an account? <Text style={styles.underlineText}>Sign In</Text>
