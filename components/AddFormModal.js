@@ -192,28 +192,22 @@ const AddFormModal = ({ location, visible, onClose }) => {
             <Picker.Item label="Type 1" value="type1" />
             <Picker.Item label="Type 2" value="type2" />
           </Picker>
-          {null && <TouchableOpacity onPress={pickImage} style={styles.button}>
-            <Text style={styles.buttonText}>SELECT {asset ? 'ANOTHER' : ''} FILE</Text>
-          </TouchableOpacity>}
-          {asset?.uri && <Image source={{ uri: asset?.uri }} style={{ width: 200, height: 200 }} />}
-
+          {asset?.uri && <Image source={{ uri: asset?.uri }} style={{ width: 200, height: 200, borderRadius: 20, marginTop: 10 }} />}
           {asset && (
-            <>
-              <TouchableOpacity onPress={() => setAsset(null)} style={styles.cancelButton}>
+            <TouchableOpacity onPress={() => setAsset(null)} style={styles.cancelButton}>
                 <Text style={styles.buttonText}>Remove Selected Image</Text>
-              </TouchableOpacity>
-            </>
+            </TouchableOpacity>
           )}
           {isLoading && <ActivityIndicator size="large" color="#0000ff" />}
           <View style={styles.buttonRow}>
             
             <TouchableOpacity
-              style={{ ...styles.button, marginTop: 10 }}
+              style={{ ...styles.button, marginTop: 10, backgroundColor: '#E0E0E0' }}
               onPress={onClose}
             >
-              <Text>Close</Text>
+              <Text style={{...styles.buttonText, color: '#000'}}>Close</Text>
             </TouchableOpacity>
-            {asset&&<TouchableOpacity onPress={uploadResource} style={styles.button}>
+            {asset && <TouchableOpacity onPress={uploadResource} style={styles.button}>
               <Text style={styles.buttonText}>Confirm</Text>
             </TouchableOpacity>}
           </View>

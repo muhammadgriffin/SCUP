@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Alert } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import { Auth } from 'aws-amplify';
+import { CommonStyles } from '../styles/CommonStyles';
 
 function SignUp({ navigation }) {
   const [username, setUsername] = useState('');
@@ -34,32 +35,38 @@ function SignUp({ navigation }) {
   };
 
   return (
-    <View>
+    <View style={CommonStyles.container}>
       <TextInput
+        style={CommonStyles.input}
         placeholder="Username"
         value={username}
         onChangeText={text => setUsername(text)}
       />
       <TextInput
+        style={CommonStyles.input}
         placeholder="Password"
         value={password}
         secureTextEntry={true}
         onChangeText={text => setPassword(text)}
       />
       <TextInput
+        style={CommonStyles.input}
         placeholder="Email"
         value={email}
         onChangeText={text => setEmail(text)}
       />
       <TextInput
+        style={CommonStyles.input}
         placeholder="Phone Number"
         value={phone}
         onChangeText={text => setPhone(text)}
       />
-      <Button title="Sign Up" onPress={handleSignUp} />
+      <TouchableOpacity style={CommonStyles.button} onPress={handleSignUp}>
+        <Text style={CommonStyles.buttonText}>Sign Up</Text>
+      </TouchableOpacity>
     </View>
-    
   );
 }
+
 
 export default SignUp;

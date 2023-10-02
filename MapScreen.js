@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   },
   addButtonContainer: {
     position: 'absolute',
-    top: 5,
+    top: 35,
     right: 16,
   },
   addButton: {

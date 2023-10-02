@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Alert } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import { Auth } from 'aws-amplify';
 import { useAuth } from './AuthContext'; // Assuming AuthContext.js is in the same directory
+import { CommonStyles } from '../styles/CommonStyles';
 
 function SignIn({ navigation }) {
   const { isAuthenticated, setIsAuthenticated } = useAuth();
@@ -27,19 +28,23 @@ function SignIn({ navigation }) {
 
  
   return (
-    <View>
+    <View style={CommonStyles.container}>
       <TextInput
+        style={CommonStyles.input}
         placeholder="Username"
         value={username}
         onChangeText={text => setUsername(text)}
       />
       <TextInput
+        style={CommonStyles.input}
         placeholder="Password"
         value={password}
         secureTextEntry={true}
         onChangeText={text => setPassword(text)}
       />
-      <Button title="Sign In" onPress={handleSignIn} />
+      <TouchableOpacity style={CommonStyles.button} onPress={handleSignIn}>
+        <Text style={CommonStyles.buttonText}>Sign In</Text>
+      </TouchableOpacity>
     </View>
   );
 }
