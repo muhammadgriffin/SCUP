@@ -8,11 +8,15 @@ type ImageMetadata @model {
   description: String
   latitude: Float
   longitude: Float
-  imageType: String
+  imageTypes: [String] 
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
 }
 
 type User @model {
     id: ID!
-    username: String!
-    totalPoints: Int
+    email: String!
+    points: Int
+    createdAt: AWSDateTime
+    updatedAt: AWSDateTime
 }

@@ -12,7 +12,7 @@ export const createImageMetadata = /* GraphQL */ `
       description
       latitude
       longitude
-      imageType
+      imageTypes
       createdAt
       updatedAt
       __typename
@@ -30,7 +30,7 @@ export const updateImageMetadata = /* GraphQL */ `
       description
       latitude
       longitude
-      imageType
+      imageTypes
       createdAt
       updatedAt
       __typename
@@ -48,7 +48,7 @@ export const deleteImageMetadata = /* GraphQL */ `
       description
       latitude
       longitude
-      imageType
+      imageTypes
       createdAt
       updatedAt
       __typename
@@ -62,8 +62,8 @@ export const createUser = /* GraphQL */ `
   ) {
     createUser(input: $input, condition: $condition) {
       id
-      username
-      totalPoints
+      email
+      points
       createdAt
       updatedAt
       __typename
@@ -77,8 +77,8 @@ export const updateUser = /* GraphQL */ `
   ) {
     updateUser(input: $input, condition: $condition) {
       id
-      username
-      totalPoints
+      email
+      points
       createdAt
       updatedAt
       __typename
@@ -92,8 +92,8 @@ export const deleteUser = /* GraphQL */ `
   ) {
     deleteUser(input: $input, condition: $condition) {
       id
-      username
-      totalPoints
+      email
+      points
       createdAt
       updatedAt
       __typename

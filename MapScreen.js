@@ -1,76 +1,143 @@
 import React, { useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import * as Location from 'expo-location';
-import AddFormModal from './components/AddFormModal'; // Adjust the path accordingly
+import AddFormModal from './components/AddFormModal';
+import { API, graphqlOperation } from 'aws-amplify';
+import { listImageMetadata } from './src/graphql/queries';
+import carAccidentIcon from './Icons/MapIcons/accident.png';
+import treeIcon from './Icons/MapIcons/obstacle.png';
+
+const CHECK_DISTANCE = 2000; // in meters, adjust as necessary
+
+function haversineDistance(coords1, coords2) {
+  const R = 6371e3; // Earth radius in meters
+  const lat1Rad = coords1.latitude * (Math.PI/180);
+  const lat2Rad = coords2.latitude * (Math.PI/180);
+  const deltaLat = (coords2.latitude - coords1.latitude) * (Math.PI/180);
+  const deltaLng = (coords2.longitude - coords1.longitude) * (Math.PI/180);
+
+  const a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) + Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.sin(deltaLng/2) * Math.sin(deltaLng/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+  return R * c;
+}
 
 const MapScreen = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
+  const [hasPermission, setHasPermission] = useState(null);
   const [watcher, setWatcher] = useState(null);
-  // Adding form variables
   const [modalVisible, setModalVisible] = useState(false);
+  const [locations, setLocations] = useState([]);
+  const [mapRegion, setMapRegion] = useState(null);
+  const [alertedLocations, setAlertedLocations] = useState([]); // Keep track of which locations have already alerted the user
 
   useEffect(() => {
-    const startLocationTracking = async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.log("Location permission denied");
-        return;
+    async function fetchImageLocations() {
+      try {
+        const imageMetadataData = await API.graphql(graphqlOperation(listImageMetadata));
+        console.log('imageMetadataData', imageMetadataData);
+        setLocations(imageMetadataData.data.listImageMetadata.items);
+      } catch (error) {
+        console.error("Error fetching image locations: ", error);
       }
-      
-      const locationWatcher = await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.BestForNavigation,
-          distanceInterval: 10, // Gets updates every 10 meters.
-          timeInterval: 1000,   // or every 1 second
-        },
-        location => {
-          setCurrentLocation({
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-            speed: location.coords.speed || 0
-          });
-        }
-      );
+    }
+    fetchImageLocations();
 
-      setWatcher(locationWatcher);
+    const startLocationTracking = async () => {
+      // Display an explanatory prompt before system location permission dialog
+      const userResponse = await Alert.alert(
+        'Location Permission',
+        'We need access to your location only while you\'re using the app to show it on the map. Please grant permission.',
+        [
+          { text: 'OK', onPress: async () => {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            setHasPermission(status === 'granted');
+
+            if (status !== 'granted') {
+              Alert.alert('Permission Denied', 'You need to grant location permissions to use this feature.');
+              return;
+            }
+
+            const locationWatcher = await Location.watchPositionAsync(
+              {
+                accuracy: Location.Accuracy.BestForNavigation,
+                distanceInterval: 10,
+                timeInterval: 1000,
+              },
+              location => {
+                setCurrentLocation({
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                  speed: location.coords.speed || 0
+                });
+              }
+            );
+
+            setWatcher(locationWatcher);
+          }},
+          { text: 'Cancel', onPress: () => {} }
+        ]
+      );
     };
 
     startLocationTracking();
 
     return () => {
       if (watcher) {
-        watcher.remove(); // Stop watching location
+        watcher.remove();
       }
     };
   }, []);
 
   return (
     <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        region={currentLocation && {
-          latitude: currentLocation.latitude,
-          longitude: currentLocation.longitude,
-          latitudeDelta: 0.010,
-          longitudeDelta: 0.010,
-        }}
-      >
-        {currentLocation && (
-          <Marker coordinate={{ latitude: currentLocation.latitude, longitude: currentLocation.longitude }} />
-        )}
-      </MapView>
-        <View style={styles.speedContainer}>
-          <Text style={styles.speedText}>{currentLocation ? `${currentLocation.speed} m/s` : 'Speed not available'}</Text>
-        </View>
-        <View style={styles.addButtonContainer}>
-          <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
-              <Text style={styles.addButtonText}>Report</Text>
-          </TouchableOpacity>
-        </View>
-        <AddFormModal location={currentLocation} visible={modalVisible} onClose={() => setModalVisible(false)} />
+      {hasPermission ? (
+        <MapView
+          showsUserLocation={true}
+          style={styles.map}
+          onRegionChangeComplete={region => setMapRegion(region)}
+          region={currentLocation && {
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude,
+            latitudeDelta: 0.010,
+            longitudeDelta: 0.010,
+          }}
+        >
+          {mapRegion && mapRegion.latitudeDelta < 0.03 && locations.map((location) => (
+            <Marker 
+              key={location.id}
+              coordinate={{ 
+                latitude: location.latitude, 
+                longitude: location.longitude 
+              }}
+              title={location.description}
+              description={location.imageType}
+            >
+              <Image 
+                source={location.imageType === 'type1' ? carAccidentIcon : (location.imageType === 'type2' ? treeIcon : null)}
+                style={{ width: 24, height: 24 }}
+              />
+            </Marker>
+          ))}
+        </MapView>
+      ) : (
+        <Text style={{ textAlign: 'center', marginTop: 20 }}>Location permissions are not granted.</Text>
+      )}
 
+      <View style={styles.speedContainer}>
+        <Text style={styles.speedText}>{currentLocation ? `${currentLocation.speed} m/s` : 'Speed not available'}</Text>
       </View>
+
+      <View style={styles.addButtonContainer}>
+        <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
+          <Text style={styles.addButtonText}>Report</Text>
+        </TouchableOpacity>
+      </View>
+
+      <AddFormModal location={currentLocation} visible={modalVisible} onClose={() => setModalVisible(false)} />
+    </View>
   );
 };
 
@@ -99,14 +166,14 @@ const styles = StyleSheet.create({
     right: 16,
   },
   addButton: {
-      backgroundColor: '#2196F3',
-      padding: 10,
-      borderRadius: 50,
-      elevation: 2, // for Android
-      shadowColor: '#000', // for iOS
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.3,
-      shadowRadius: 2,
+    backgroundColor: '#2196F3',
+    padding: 10,
+    borderRadius: 50,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
   },
 });
 

@@ -17,13 +17,13 @@ const AuthStack = createNativeStackNavigator();
 const AppStack = createDrawerNavigator();  // Use DrawerNavigator for AppStack
 
 export default function MainNavigation() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAnonymous } = useAuth();
 
   const AppContent = () => {
     return (
-      <AppStack.Navigator initialRouteName="Home">
-        <AppStack.Screen name="Home" component={HomeScreen} />
-        <AppStack.Screen name="UploadDisplay" component={UploadDisplay} />
+      <AppStack.Navigator initialRouteName="Profile">
+        {/* <AppStack.Screen name="Home" component={HomeScreen} />
+        <AppStack.Screen name="UploadDisplay" component={UploadDisplay} /> */}
         <AppStack.Screen name="MapScreen" component={MapScreen} />
         <AppStack.Screen name="Profile" component={ProfileScreen} />
       </AppStack.Navigator>
@@ -33,7 +33,12 @@ export default function MainNavigation() {
   return (
     <NavigationContainer>
       {isAuthenticated ? (
-        <AppContent />  // Use the AppContent function to render authenticated content
+        isAnonymous ? (
+          // Optional: You can add a different flow or components for anonymous users if needed.
+          <AppContent />
+        ) : (
+          <AppContent />
+        )
       ) : (
         <AuthStack.Navigator>
           <AuthStack.Screen name="AuthLanding" component={AuthLandingScreen} options={{ headerShown: false }} />

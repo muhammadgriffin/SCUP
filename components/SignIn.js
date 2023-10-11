@@ -5,7 +5,7 @@ import { useAuth } from './AuthContext'; // Assuming AuthContext.js is in the sa
 import { CommonStyles } from '../styles/CommonStyles';
 
 function SignIn({ navigation }) {
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
+  const { isAuthenticated, isAnonymous,setIsAuthenticated, setIsAnonymous } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   useEffect(() => {
@@ -17,13 +17,30 @@ function SignIn({ navigation }) {
     try {
       const user = await Auth.signIn(username, password);
       if (user) {
-        setIsAuthenticated(true); // Setting isAuthenticated to true after successful sign-in
+        setIsAuthenticated(true);
+         // Setting isAuthenticated to true arfter successful sign-in
       }
     } catch (error) {
       console.log('Error signing in:', error);
       Alert.alert('Sign in error', error.message || 'An error occurred while signing in.');
     }
   };
+
+  const handleAnonymousLogin = async () => {
+    try {
+        // Get unauthenticated credentials
+        await Auth.signOut();
+        const credentials = await Auth.currentCredentials();
+        
+        if (credentials) {
+          setIsAuthenticated(true);
+          setIsAnonymous(true);  // Set anonymous state to true
+      }
+    } catch (error) {
+        console.log('Error signing in anonymously:', error);
+        Alert.alert('Anonymous sign in error', error.message || 'An error occurred while signing in anonymously.');
+    }
+};
 
 
  
@@ -44,6 +61,9 @@ function SignIn({ navigation }) {
       />
       <TouchableOpacity style={CommonStyles.button} onPress={handleSignIn}>
         <Text style={CommonStyles.buttonText}>Sign In</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={CommonStyles.button} onPress={handleAnonymousLogin}>
+        <Text style={CommonStyles.buttonText}>Sign In Anonymously</Text>
       </TouchableOpacity>
     </View>
   );

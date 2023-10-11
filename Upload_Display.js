@@ -6,6 +6,7 @@ import awsmobile from './src/aws-exports';
 import ImageSlider from './ImageSlider';
 
 Amplify.configure(awsmobile);
+
 export default function UploadDisplay ({navigation}) {
   const [image, setImage] = useState(null);
   const [type,setType] = useState(null);

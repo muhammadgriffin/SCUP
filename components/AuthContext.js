@@ -10,9 +10,10 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAnonymous, setIsAnonymous] = useState(false);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+        <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, isAnonymous, setIsAnonymous }}>
             {children}
         </AuthContext.Provider>
     );

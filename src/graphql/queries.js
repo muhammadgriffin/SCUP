@@ -9,7 +9,7 @@ export const getImageMetadata = /* GraphQL */ `
       description
       latitude
       longitude
-      imageType
+      imageTypes
       createdAt
       updatedAt
       __typename
@@ -29,7 +29,7 @@ export const listImageMetadata = /* GraphQL */ `
         description
         latitude
         longitude
-        imageType
+        imageTypes
         createdAt
         updatedAt
         __typename
@@ -43,8 +43,8 @@ export const getUser = /* GraphQL */ `
   query GetUser($id: ID!) {
     getUser(id: $id) {
       id
-      username
-      totalPoints
+      email
+      points
       createdAt
       updatedAt
       __typename
@@ -60,8 +60,8 @@ export const listUsers = /* GraphQL */ `
     listUsers(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
-        username
-        totalPoints
+        email
+        points
         createdAt
         updatedAt
         __typename

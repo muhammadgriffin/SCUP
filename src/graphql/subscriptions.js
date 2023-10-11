@@ -11,7 +11,7 @@ export const onCreateImageMetadata = /* GraphQL */ `
       description
       latitude
       longitude
-      imageType
+      imageTypes
       createdAt
       updatedAt
       __typename
@@ -28,7 +28,7 @@ export const onUpdateImageMetadata = /* GraphQL */ `
       description
       latitude
       longitude
-      imageType
+      imageTypes
       createdAt
       updatedAt
       __typename
@@ -45,7 +45,7 @@ export const onDeleteImageMetadata = /* GraphQL */ `
       description
       latitude
       longitude
-      imageType
+      imageTypes
       createdAt
       updatedAt
       __typename
@@ -56,8 +56,8 @@ export const onCreateUser = /* GraphQL */ `
   subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
     onCreateUser(filter: $filter) {
       id
-      username
-      totalPoints
+      email
+      points
       createdAt
       updatedAt
       __typename
@@ -68,8 +68,8 @@ export const onUpdateUser = /* GraphQL */ `
   subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
     onUpdateUser(filter: $filter) {
       id
-      username
-      totalPoints
+      email
+      points
       createdAt
       updatedAt
       __typename
@@ -80,8 +80,8 @@ export const onDeleteUser = /* GraphQL */ `
   subscription OnDeleteUser($filter: ModelSubscriptionUserFilterInput) {
     onDeleteUser(filter: $filter) {
       id
-      username
-      totalPoints
+      email
+      points
       createdAt
       updatedAt
       __typename
