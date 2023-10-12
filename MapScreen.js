@@ -8,6 +8,7 @@ import { API, graphqlOperation } from 'aws-amplify';
 import { listImageMetadata } from './src/graphql/queries';
 import carAccidentIcon from './Icons/MapIcons/accident.png';
 import treeIcon from './Icons/MapIcons/obstacle.png';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const CHECK_DISTANCE = 2000; // in meters, adjust as necessary
 
@@ -130,13 +131,18 @@ const MapScreen = () => {
         <Text style={styles.speedText}>{currentLocation ? `${currentLocation.speed} m/s` : 'Speed not available'}</Text>
       </View>
 
-      <View style={styles.addButtonContainer}>
-        <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
-          <Text style={styles.addButtonText}>Report</Text>
-        </TouchableOpacity>
-      </View>
+      <View style={styles.reportButtonContainer}>
+                <TouchableOpacity 
+                    style={styles.reportButton} 
+                    onPress={() => setModalVisible(true)}
+                    activeOpacity={0.7}  // Slight opacity change on button press
+                >
+                    <MaterialIcons name="report" size={24} color="white" />
+                    <Text style={styles.reportButtonText}>Report</Text>
+                </TouchableOpacity>
+            </View>
 
-      <AddFormModal location={currentLocation} visible={modalVisible} onClose={() => setModalVisible(false)} />
+            <AddFormModal location={currentLocation} visible={modalVisible} onClose={() => setModalVisible(false)} />
     </View>
   );
 };
@@ -160,21 +166,31 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
   },
-  addButtonContainer: {
+  reportButtonContainer: {
     position: 'absolute',
-    top: 35,
-    right: 16,
-  },
-  addButton: {
+    top: 10,
+    left: 16,
     backgroundColor: '#2196F3',
-    padding: 10,
-    borderRadius: 50,
-    elevation: 2,
+    borderRadius: 25,
+    elevation: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
-    shadowRadius: 2,
-  },
+    shadowRadius: 3,
+},
+reportButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+},
+reportButtonText: {
+    color: 'white',
+    marginLeft: 8,
+    fontSize: 16,
+    fontWeight: 'bold',
+},
 });
+
 
 export default MapScreen;

@@ -3,6 +3,7 @@ import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'reac
 import { Auth } from 'aws-amplify';
 import { useAuth } from './AuthContext'; // Assuming AuthContext.js is in the same directory
 import { CommonStyles } from '../styles/CommonStyles';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 function SignIn({ navigation }) {
   const { isAuthenticated, isAnonymous,setIsAuthenticated, setIsAnonymous } = useAuth();
@@ -44,29 +45,80 @@ function SignIn({ navigation }) {
 
 
  
-  return (
-    <View style={CommonStyles.container}>
+return (
+  <View style={styles.container}>
+      <Text style={styles.loginTitle}>Login</Text>
       <TextInput
-        style={CommonStyles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={text => setUsername(text)}
+          style={CommonStyles.input}
+          placeholder="Username"
+          value={username}
+          onChangeText={text => setUsername(text)}
       />
       <TextInput
-        style={CommonStyles.input}
-        placeholder="Password"
-        value={password}
-        secureTextEntry={true}
-        onChangeText={text => setPassword(text)}
+          style={CommonStyles.input}
+          placeholder="Password"
+          value={password}
+          secureTextEntry={true}
+          onChangeText={text => setPassword(text)}
       />
-      <TouchableOpacity style={CommonStyles.button} onPress={handleSignIn}>
-        <Text style={CommonStyles.buttonText}>Sign In</Text>
+      <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
+          <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={CommonStyles.button} onPress={handleAnonymousLogin}>
-        <Text style={CommonStyles.buttonText}>Sign In Anonymously</Text>
+      <TouchableOpacity 
+          style={[CommonStyles.button, styles.anonymousButton]} 
+          onPress={handleAnonymousLogin}
+      >
+          <Icon name="incognito" size={20} color="#fff" />  
+          <Text style={[CommonStyles.buttonText, styles.anonymousButtonText]}>Sign In Anonymously</Text>
       </TouchableOpacity>
-    </View>
-  );
+  </View>
+);
 }
+
+const styles = StyleSheet.create({
+container: {
+  ...CommonStyles.container,
+  paddingHorizontal: 20, // Add horizontal padding for breathing space
+  paddingTop: 0, // Added some top padding to shift the content a bit down
+},
+input: {
+  ...CommonStyles.input,
+  marginBottom: 15, // Spacing between the inputs and buttons
+  borderWidth: 1,  // Optional: To give border to inputs
+  borderColor: '#ddd', // Light gray border color
+  borderRadius: 5,  // Rounded corners
+  padding: 10, // Inner padding
+},
+signInButton: {
+  ...CommonStyles.button,
+  backgroundColor: '#2a9d8f', // Choose a color that suits your theme
+  marginBottom: 10, // Spacing between the two buttons
+},
+anonymousButton: {
+  ...CommonStyles.button,
+  backgroundColor: '#f4a261', // Different color for anonymous sign in
+},
+buttonText: {
+  ...CommonStyles.buttonText,
+},
+loginTitle: {
+  fontSize: 24,
+  fontWeight: '700',
+  color: '#264653',
+  marginBottom: 15,
+  marginLeft: 5,
+  alignSelf: 'flex-start',  // Aligns the title to the left
+},
+anonymousButton: {
+  backgroundColor: '#A5A5A5',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginTop: 10,
+},
+anonymousButtonText: {
+  marginLeft: 10,
+},
+});
 
 export default SignIn;

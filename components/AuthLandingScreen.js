@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   switchText: {
     textAlign: 'center',
     fontSize: 18,
-    marginTop: 1.5,
+    marginTop: 20, // Increased margin for separation
   },
   underlineText: {
     textDecorationLine: 'underline',
@@ -93,5 +93,6 @@ const styles = StyleSheet.create({
     color: '#2a9d8f', // Same as button's background color for consistency
   },
 });
+
 
 export default AuthLandingScreen;

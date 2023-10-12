@@ -32,7 +32,6 @@ const AddFormModal = ({ location, visible, onClose }) => {
   const [longitude, setLongitude] = useState(null);
   const [progress, setProgress] = useState(0);
   const [uploadSuccessOpacity] = useState(new Animated.Value(0));
-  const [pickers, setPickers] = useState([{ id: 1, value: "" }]);
 
   useEffect(() => {
     if (location) {
@@ -63,7 +62,7 @@ const AddFormModal = ({ location, visible, onClose }) => {
         description: description,
         latitude: latitude,
         longitude: longitude,
-        imageTypes: pickers.map(picker => picker.value).filter(val => val !== "")
+        imageType: imageType
     };
 
     try {
@@ -184,48 +183,43 @@ const AddFormModal = ({ location, visible, onClose }) => {
               editable={false} 
               style={styles.inputField}
           />
-
-          {pickers.map((picker) => (
-            <View key={picker.id} style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Picker
-                selectedValue={picker.value}
-                onValueChange={(itemValue) => {
-                  const updatedPickers = pickers.map(p => 
-                    p.id === picker.id ? {...p, value: itemValue} : p
-                  );
-                  setPickers(updatedPickers);
-                }}
-                style={styles.inputField}
-              >
-                <Picker.Item label="Select a Type..." value="" /> 
-                <Picker.Item label="Type 1" value="type1" />
-                <Picker.Item label="Type 2" value="type2" />
-              </Picker>
-              <TouchableOpacity
-                onPress={() => {
-                  const updatedPickers = pickers.filter(p => p.id !== picker.id);
-                  setPickers(updatedPickers);
-                }}
-              >
-                <Text style={{ marginLeft: 10 }}>X</Text>  
-              </TouchableOpacity>
-            </View>
-          ))}
-          <TouchableOpacity
-            onPress={() => {
-              const newId = pickers.length > 0 ? pickers[pickers.length - 1].id + 1 : 1;
-              setPickers([...pickers, {id: newId, value: ""}]);
-            }}
+          <Picker
+            selectedValue={imageType}
+            onValueChange={(itemValue) => setImageType(itemValue)}
+            style={styles.inputField}
           >
-            <Text>Add Type</Text>
-          </TouchableOpacity>
-
+            <Picker.Item label="Select a Type..." value="" /> 
+            <Picker.Item label="Type 1" value="type1" />
+            <Picker.Item label="Type 2" value="type2" />
+          </Picker>
+          {asset?.uri && <Image source={{ uri: asset?.uri }} style={{ width: 200, height: 200, borderRadius: 20, marginTop: 10 }} />}
+          {asset && (
+            <TouchableOpacity onPress={() => setAsset(null)} style={styles.cancelButton}>
+                <Text style={styles.buttonText}>Remove Selected Image</Text>
+            </TouchableOpacity>
+          )}
+          {isLoading && <ActivityIndicator size="large" color="#0000ff" />}
+          <View style={styles.buttonRow}>
+            
+            <TouchableOpacity
+              style={{ ...styles.button, marginTop: 10, backgroundColor: '#E0E0E0' }}
+              onPress={onClose}
+            >
+              <Text style={{...styles.buttonText, color: '#000'}}>Close</Text>
+            </TouchableOpacity>
+            {asset && <TouchableOpacity onPress={uploadResource} style={styles.button}>
+              <Text style={styles.buttonText}>Confirm</Text>
+            </TouchableOpacity>}
+          </View>
+          <Animated.View style={{ opacity: uploadSuccessOpacity, flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+              <Icon name="check-circle" size={20} color="green" />
+              <Text style={{ color: 'green', marginLeft: 5 }}>Upload Successful!</Text>
+          </Animated.View>
         </View>
       </View>
     </Modal>
   );
 };
-
 
 
 const styles = StyleSheet.create({

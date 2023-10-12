@@ -9,7 +9,7 @@ export const getImageMetadata = /* GraphQL */ `
       description
       latitude
       longitude
-      imageTypes
+      imageType
       createdAt
       updatedAt
       __typename
@@ -29,9 +29,94 @@ export const listImageMetadata = /* GraphQL */ `
         description
         latitude
         longitude
-        imageTypes
+        imageType
         createdAt
         updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const getBadge = /* GraphQL */ `
+  query GetBadge($id: ID!) {
+    getBadge(id: $id) {
+      id
+      name
+      icon
+      description
+      rewards {
+        nextToken
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const listBadges = /* GraphQL */ `
+  query ListBadges(
+    $filter: ModelBadgeFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listBadges(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        icon
+        description
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const getReward = /* GraphQL */ `
+  query GetReward($id: ID!) {
+    getReward(id: $id) {
+      id
+      badgeId
+      name
+      description
+      value
+      badge {
+        id
+        name
+        icon
+        description
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      badgeRewardsId
+      __typename
+    }
+  }
+`;
+export const listRewards = /* GraphQL */ `
+  query ListRewards(
+    $filter: ModelRewardFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listRewards(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        badgeId
+        name
+        description
+        value
+        createdAt
+        updatedAt
+        badgeRewardsId
         __typename
       }
       nextToken
@@ -45,8 +130,18 @@ export const getUser = /* GraphQL */ `
       id
       email
       points
+      badge {
+        id
+        name
+        icon
+        description
+        createdAt
+        updatedAt
+        __typename
+      }
       createdAt
       updatedAt
+      userBadgeId
       __typename
     }
   }
@@ -64,6 +159,7 @@ export const listUsers = /* GraphQL */ `
         points
         createdAt
         updatedAt
+        userBadgeId
         __typename
       }
       nextToken

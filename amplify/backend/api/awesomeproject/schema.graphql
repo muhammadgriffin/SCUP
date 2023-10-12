@@ -1,5 +1,3 @@
-# This "input" configures a global authorization rule to enable public access to
-# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
 input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
 
 type ImageMetadata @model {
@@ -8,15 +6,33 @@ type ImageMetadata @model {
   description: String
   latitude: Float
   longitude: Float
-  imageTypes: [String] 
+  imageType: String!
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
 }
 
+type Badge @model {
+  id: ID!
+  name: String! # This can be GOLD, SILVER, or BRONZE
+  icon: String! # URL or unique identifier for the badge's icon
+  description: String
+  rewards: [Reward] @hasMany
+}
+
+type Reward @model {
+  id: ID!
+  badgeId: ID!
+  name: String!
+  description: String!
+  value: String! # This can be points, currency, or any other type of value you'd associate with a reward.
+  badge: Badge @belongsTo(fields: ["badgeId"])
+}
+
 type User @model {
-    id: ID!
-    email: String!
-    points: Int
-    createdAt: AWSDateTime
-    updatedAt: AWSDateTime
+  id: ID!
+  email: String!
+  points: Int
+  badge: Badge @hasOne
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
 }

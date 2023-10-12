@@ -11,7 +11,7 @@ export const onCreateImageMetadata = /* GraphQL */ `
       description
       latitude
       longitude
-      imageTypes
+      imageType
       createdAt
       updatedAt
       __typename
@@ -28,7 +28,7 @@ export const onUpdateImageMetadata = /* GraphQL */ `
       description
       latitude
       longitude
-      imageTypes
+      imageType
       createdAt
       updatedAt
       __typename
@@ -45,9 +45,132 @@ export const onDeleteImageMetadata = /* GraphQL */ `
       description
       latitude
       longitude
-      imageTypes
+      imageType
       createdAt
       updatedAt
+      __typename
+    }
+  }
+`;
+export const onCreateBadge = /* GraphQL */ `
+  subscription OnCreateBadge($filter: ModelSubscriptionBadgeFilterInput) {
+    onCreateBadge(filter: $filter) {
+      id
+      name
+      icon
+      description
+      rewards {
+        nextToken
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onUpdateBadge = /* GraphQL */ `
+  subscription OnUpdateBadge($filter: ModelSubscriptionBadgeFilterInput) {
+    onUpdateBadge(filter: $filter) {
+      id
+      name
+      icon
+      description
+      rewards {
+        nextToken
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onDeleteBadge = /* GraphQL */ `
+  subscription OnDeleteBadge($filter: ModelSubscriptionBadgeFilterInput) {
+    onDeleteBadge(filter: $filter) {
+      id
+      name
+      icon
+      description
+      rewards {
+        nextToken
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onCreateReward = /* GraphQL */ `
+  subscription OnCreateReward($filter: ModelSubscriptionRewardFilterInput) {
+    onCreateReward(filter: $filter) {
+      id
+      badgeId
+      name
+      description
+      value
+      badge {
+        id
+        name
+        icon
+        description
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      badgeRewardsId
+      __typename
+    }
+  }
+`;
+export const onUpdateReward = /* GraphQL */ `
+  subscription OnUpdateReward($filter: ModelSubscriptionRewardFilterInput) {
+    onUpdateReward(filter: $filter) {
+      id
+      badgeId
+      name
+      description
+      value
+      badge {
+        id
+        name
+        icon
+        description
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      badgeRewardsId
+      __typename
+    }
+  }
+`;
+export const onDeleteReward = /* GraphQL */ `
+  subscription OnDeleteReward($filter: ModelSubscriptionRewardFilterInput) {
+    onDeleteReward(filter: $filter) {
+      id
+      badgeId
+      name
+      description
+      value
+      badge {
+        id
+        name
+        icon
+        description
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      badgeRewardsId
       __typename
     }
   }
@@ -58,8 +181,18 @@ export const onCreateUser = /* GraphQL */ `
       id
       email
       points
+      badge {
+        id
+        name
+        icon
+        description
+        createdAt
+        updatedAt
+        __typename
+      }
       createdAt
       updatedAt
+      userBadgeId
       __typename
     }
   }
@@ -70,8 +203,18 @@ export const onUpdateUser = /* GraphQL */ `
       id
       email
       points
+      badge {
+        id
+        name
+        icon
+        description
+        createdAt
+        updatedAt
+        __typename
+      }
       createdAt
       updatedAt
+      userBadgeId
       __typename
     }
   }
@@ -82,8 +225,18 @@ export const onDeleteUser = /* GraphQL */ `
       id
       email
       points
+      badge {
+        id
+        name
+        icon
+        description
+        createdAt
+        updatedAt
+        __typename
+      }
       createdAt
       updatedAt
+      userBadgeId
       __typename
     }
   }

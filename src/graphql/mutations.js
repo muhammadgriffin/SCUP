@@ -12,7 +12,7 @@ export const createImageMetadata = /* GraphQL */ `
       description
       latitude
       longitude
-      imageTypes
+      imageType
       createdAt
       updatedAt
       __typename
@@ -30,7 +30,7 @@ export const updateImageMetadata = /* GraphQL */ `
       description
       latitude
       longitude
-      imageTypes
+      imageType
       createdAt
       updatedAt
       __typename
@@ -48,9 +48,150 @@ export const deleteImageMetadata = /* GraphQL */ `
       description
       latitude
       longitude
-      imageTypes
+      imageType
       createdAt
       updatedAt
+      __typename
+    }
+  }
+`;
+export const createBadge = /* GraphQL */ `
+  mutation CreateBadge(
+    $input: CreateBadgeInput!
+    $condition: ModelBadgeConditionInput
+  ) {
+    createBadge(input: $input, condition: $condition) {
+      id
+      name
+      icon
+      description
+      rewards {
+        nextToken
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const updateBadge = /* GraphQL */ `
+  mutation UpdateBadge(
+    $input: UpdateBadgeInput!
+    $condition: ModelBadgeConditionInput
+  ) {
+    updateBadge(input: $input, condition: $condition) {
+      id
+      name
+      icon
+      description
+      rewards {
+        nextToken
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const deleteBadge = /* GraphQL */ `
+  mutation DeleteBadge(
+    $input: DeleteBadgeInput!
+    $condition: ModelBadgeConditionInput
+  ) {
+    deleteBadge(input: $input, condition: $condition) {
+      id
+      name
+      icon
+      description
+      rewards {
+        nextToken
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const createReward = /* GraphQL */ `
+  mutation CreateReward(
+    $input: CreateRewardInput!
+    $condition: ModelRewardConditionInput
+  ) {
+    createReward(input: $input, condition: $condition) {
+      id
+      badgeId
+      name
+      description
+      value
+      badge {
+        id
+        name
+        icon
+        description
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      badgeRewardsId
+      __typename
+    }
+  }
+`;
+export const updateReward = /* GraphQL */ `
+  mutation UpdateReward(
+    $input: UpdateRewardInput!
+    $condition: ModelRewardConditionInput
+  ) {
+    updateReward(input: $input, condition: $condition) {
+      id
+      badgeId
+      name
+      description
+      value
+      badge {
+        id
+        name
+        icon
+        description
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      badgeRewardsId
+      __typename
+    }
+  }
+`;
+export const deleteReward = /* GraphQL */ `
+  mutation DeleteReward(
+    $input: DeleteRewardInput!
+    $condition: ModelRewardConditionInput
+  ) {
+    deleteReward(input: $input, condition: $condition) {
+      id
+      badgeId
+      name
+      description
+      value
+      badge {
+        id
+        name
+        icon
+        description
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      badgeRewardsId
       __typename
     }
   }
@@ -64,8 +205,18 @@ export const createUser = /* GraphQL */ `
       id
       email
       points
+      badge {
+        id
+        name
+        icon
+        description
+        createdAt
+        updatedAt
+        __typename
+      }
       createdAt
       updatedAt
+      userBadgeId
       __typename
     }
   }
@@ -79,8 +230,18 @@ export const updateUser = /* GraphQL */ `
       id
       email
       points
+      badge {
+        id
+        name
+        icon
+        description
+        createdAt
+        updatedAt
+        __typename
+      }
       createdAt
       updatedAt
+      userBadgeId
       __typename
     }
   }
@@ -94,8 +255,18 @@ export const deleteUser = /* GraphQL */ `
       id
       email
       points
+      badge {
+        id
+        name
+        icon
+        description
+        createdAt
+        updatedAt
+        __typename
+      }
       createdAt
       updatedAt
+      userBadgeId
       __typename
     }
   }
