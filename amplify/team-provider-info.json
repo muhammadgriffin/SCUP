@@ -23,12 +23,17 @@
         "identifyLabelse14172c6": {}
       },
       "api": {
-        "awesomeproject": {}
+        "awesomeproject": {},
+        "apicb916eef": {}
       },
       "function": {
         "CreateUserForSure": {
           "deploymentBucketName": "amplify-awesomeproject-dev-155925-deployment",
-          "s3Key": "amplify-builds/CreateUserForSure-6c594437724d53384b50-build.zip"
+          "s3Key": "amplify-builds/CreateUserForSure-666a46794d65786b4930-build.zip"
+        },
+        "RoadSafetyKMSManager": {
+          "deploymentBucketName": "amplify-awesomeproject-dev-155925-deployment",
+          "s3Key": "amplify-builds/RoadSafetyKMSManager-4549637662444544304d-build.zip"
         }
       }
     }

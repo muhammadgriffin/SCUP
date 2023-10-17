@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/decrypt": {
+      "name": "/decrypt",
+      "lambdaFunction": "RoadSafetyKMSManager",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

@@ -114,7 +114,7 @@ anonymousButton: {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'center',
-  marginTop: 10,
+  marginTop: 0,
 },
 anonymousButtonText: {
   marginLeft: 10,

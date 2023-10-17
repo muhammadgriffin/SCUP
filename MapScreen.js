@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Modal, TouchableOpacity, View, Text, StyleSheet, Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import * as Location from 'expo-location';
 import AddFormModal from './components/AddFormModal';
+import LocationDetailsModal from './components/LocationDetailsModal';
 import { API, graphqlOperation } from 'aws-amplify';
 import { listImageMetadata } from './src/graphql/queries';
 import carAccidentIcon from './Icons/MapIcons/accident.png';
 import treeIcon from './Icons/MapIcons/obstacle.png';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Storage } from 'aws-amplify';
 
 const CHECK_DISTANCE = 2000; // in meters, adjust as necessary
 
@@ -25,6 +26,8 @@ function haversineDistance(coords1, coords2) {
   return R * c;
 }
 
+
+
 const MapScreen = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [hasPermission, setHasPermission] = useState(null);
@@ -32,13 +35,13 @@ const MapScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [locations, setLocations] = useState([]);
   const [mapRegion, setMapRegion] = useState(null);
-  const [alertedLocations, setAlertedLocations] = useState([]); // Keep track of which locations have already alerted the user
+  const [alertedLocations, setAlertedLocations] = useState([]);
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   useEffect(() => {
     async function fetchImageLocations() {
       try {
         const imageMetadataData = await API.graphql(graphqlOperation(listImageMetadata));
-        console.log('imageMetadataData', imageMetadataData);
         setLocations(imageMetadataData.data.listImageMetadata.items);
       } catch (error) {
         console.error("Error fetching image locations: ", error);
@@ -47,7 +50,6 @@ const MapScreen = () => {
     fetchImageLocations();
 
     const startLocationTracking = async () => {
-      // Display an explanatory prompt before system location permission dialog
       const userResponse = await Alert.alert(
         'Location Permission',
         'We need access to your location only while you\'re using the app to show it on the map. Please grant permission.',
@@ -71,7 +73,7 @@ const MapScreen = () => {
                 setCurrentLocation({
                   latitude: location.coords.latitude,
                   longitude: location.coords.longitude,
-                  speed: location.coords.speed || 0
+                  speed: location.coords.speed ? location.coords.speed * 3.6 : 0 // Convert m/s to km/h
                 });
               }
             );
@@ -113,11 +115,10 @@ const MapScreen = () => {
                 latitude: location.latitude, 
                 longitude: location.longitude 
               }}
-              title={location.description}
-              description={location.imageType}
+              onPress={() => setSelectedLocation(location)}
             >
               <Image 
-                source={location.imageType === 'type1' ? carAccidentIcon : (location.imageType === 'type2' ? treeIcon : null)}
+                source={location.imageType === 'type1' ? carAccidentIcon : (location.imageType === 'Obstacle (Potholes)' ? treeIcon : null)}
                 style={{ width: 24, height: 24 }}
               />
             </Marker>
@@ -128,21 +129,26 @@ const MapScreen = () => {
       )}
 
       <View style={styles.speedContainer}>
-        <Text style={styles.speedText}>{currentLocation ? `${currentLocation.speed} m/s` : 'Speed not available'}</Text>
+        <Text style={styles.speedText}>{currentLocation ? `${currentLocation.speed.toFixed(2)} km/h` : 'Speed not available'}</Text>
       </View>
 
       <View style={styles.reportButtonContainer}>
-                <TouchableOpacity 
-                    style={styles.reportButton} 
-                    onPress={() => setModalVisible(true)}
-                    activeOpacity={0.7}  // Slight opacity change on button press
-                >
-                    <MaterialIcons name="report" size={24} color="white" />
-                    <Text style={styles.reportButtonText}>Report</Text>
-                </TouchableOpacity>
-            </View>
+        <TouchableOpacity 
+          style={styles.reportButton} 
+          onPress={() => setModalVisible(true)}
+          activeOpacity={0.7}
+        >
+          <MaterialIcons name="report" size={24} color="white" />
+          <Text style={styles.reportButtonText}>Report</Text>
+        </TouchableOpacity>
+      </View>
 
-            <AddFormModal location={currentLocation} visible={modalVisible} onClose={() => setModalVisible(false)} />
+      <LocationDetailsModal 
+        location={selectedLocation} 
+        onClose={() => setSelectedLocation(null)} 
+      />
+
+      <AddFormModal location={currentLocation} visible={modalVisible} onClose={() => setModalVisible(false)} />
     </View>
   );
 };
@@ -168,7 +174,7 @@ const styles = StyleSheet.create({
   },
   reportButtonContainer: {
     position: 'absolute',
-    top: 10,
+    top: 20,
     left: 16,
     backgroundColor: '#2196F3',
     borderRadius: 25,
@@ -177,20 +183,19 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
-},
-reportButton: {
+  },
+  reportButton: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
     paddingHorizontal: 15,
-},
-reportButtonText: {
+  },
+  reportButtonText: {
     color: 'white',
     marginLeft: 8,
     fontSize: 16,
     fontWeight: 'bold',
-},
+  },
 });
-
 
 export default MapScreen;

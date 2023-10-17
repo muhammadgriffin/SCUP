@@ -57,6 +57,7 @@ function SignUp({ navigation }) {
   return (
     <View style={CommonStyles.container}>
       {/* Standard Sign Up Inputs */}
+      
       <TextInput
         style={CommonStyles.input}
         placeholder="Username"

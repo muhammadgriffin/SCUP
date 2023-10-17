@@ -1,30 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import LinearGradient from 'react-native-linear-gradient'; // Assuming you've installed react-native-linear-gradient
+import { LinearGradient } from 'expo-linear-gradient';
+import { API, graphqlOperation } from 'aws-amplify';
+import { listUsers } from '../src/graphql/queries';  // Adjust the path if necessary
 
 export default function LeaderboardScreen({ navigation }) {
-    // Dummy data for the leaderboard
-    const generateRandomID = (length = 8) => {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let result = '';
-        for (let i = 0; i < length; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return result;
-    };
-    const users = [
-        { id: generateRandomID(), points: 250, badge: "Gold" },
-        { id: generateRandomID(), points: 200, badge: "Silver" },
-        { id: generateRandomID(), points: 150, badge: "Bronze" },
-        { id: generateRandomID(), points: 50, badge: "Beginner" },
-        // ... add more users as needed
-    ];
-    
 
-    // Function to get the appropriate icon based on the badge
+    const [users, setUsers] = useState([]);
+
+    const fetchUsers = async () => {
+        try {
+            const userData = await API.graphql(graphqlOperation(listUsers));
+            return userData.data.listUsers.items;
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+    };
+
+    const determineBadge = (points) => {
+        if (points >= 2000) return "Gold";
+        if (points >= 1000) return "Silver";
+        if (points >= 500) return "Bronze";
+        return "Beginner";
+    };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const fetchedUsers = await fetchUsers();
+            const usersWithBadges = fetchedUsers.map(user => ({
+                ...user,
+                badge: determineBadge(user.points)
+            }));
+            setUsers(usersWithBadges);
+        };
+
+        fetchData();
+    }, []);
+
     const getBadgeIcon = (badge) => {
-        switch(badge) {
+        switch (badge) {
             case "Gold": return "star";
             case "Silver": return "star-half-o";
             case "Bronze": return "star-o";
@@ -32,9 +47,9 @@ export default function LeaderboardScreen({ navigation }) {
             default: return "user";
         }
     };
-    // Function to get the appropriate color based on the badge
+
     const getBadgeColor = (badge) => {
-        switch(badge) {
+        switch (badge) {
             case "Gold": return "#FFD700"; // Gold color
             case "Silver": return "#C0C0C0"; // Silver color
             case "Bronze": return "#CD7F32"; // Bronze color
@@ -42,15 +57,20 @@ export default function LeaderboardScreen({ navigation }) {
             default: return "#A9A9A9"; // Default to light gray for any other badges
         }
     };
+    const truncateEmail = (email, length = 15) => {
+        if (email.length <= length) return email;
+        return email.substring(0, length) + '...';
+    };
+    
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Leaderboard</Text>
             <ScrollView style={styles.leaderboard}>
                 {users.map((user, index) => (
                     <View key={index} style={styles.userRow}>
-                        <Text style={styles.userName}>{user.id}</Text>
+                        <Text style={styles.userName}>{truncateEmail(user.email)}</Text>
                         <Text style={styles.userPoints}>{user.points}</Text>
-                        <View style={[styles.badge, {backgroundColor: getBadgeColor(user.badge)}]}>
+                        <View style={[styles.badge, { backgroundColor: getBadgeColor(user.badge) }]}>
                             <Icon name={getBadgeIcon(user.badge)} size={20} color="#f4f4f8" />
                             <Text style={styles.badgeText}>{user.badge}</Text>
                         </View>
@@ -58,8 +78,8 @@ export default function LeaderboardScreen({ navigation }) {
                 ))}
             </ScrollView>
             <TouchableOpacity style={styles.rewardButton} onPress={() => navigation.navigate('RewardsCenter')}>
-                <LinearGradient 
-                    colors={['#FFD700', '#FFB300']} 
+                <LinearGradient
+                    colors={['#FFD700', '#FFB300']}
                     style={styles.gradientButton}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}>
@@ -127,14 +147,13 @@ const styles = StyleSheet.create({
     rewardButton: {
         marginBottom: 20,
         borderRadius: 15,
-        overflow: 'hidden', // This is to ensure the LinearGradient is bounded within the button
+        overflow: 'hidden',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.3,
         shadowRadius: 4,
         elevation: 5,
     },
-    
     gradientButton: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -142,11 +161,9 @@ const styles = StyleSheet.create({
         padding: 12,
         borderRadius: 15,
     },
-    
     buttonIcon: {
         marginRight: 10,
     },
-    
     rewardButtonText: {
         fontSize: 18,
         fontWeight: '700',

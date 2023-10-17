@@ -15,6 +15,7 @@ import { useAuth } from './components/AuthContext';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LeaderboardScreen from "./components/LeaderBoardScreen"
 import RewardsCenterScreen from './components/RewardsCenterScreen';
+import SettingsScreen from './components/SettingsScreen';
 const Stack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
 const AppStack = createDrawerNavigator();
@@ -36,8 +37,10 @@ export default function MainNavigation() {
         <AppStack.Navigator initialRouteName="Profile" screenOptions={screenOptionsWithLogout}>
             <AppStack.Screen name="MapScreen" component={MapScreen} />
             <AppStack.Screen name="Profile" component={ProfileScreen} />
-            <AppStack.Screen name="Leaderboard" component={LeaderboardScreen} />
+            <AppStack.Screen name="Leader Board" component={LeaderboardScreen} />
             <AppStack.Screen name="RewardsCenter" component={RewardsCenterScreen} />
+            <AppStack.Screen name="Privacy Settings" component={SettingsScreen} />
+            
         </AppStack.Navigator>
     );
 };
